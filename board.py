@@ -237,7 +237,7 @@ class Board:
 
                 if targetPiece != None:
                     # Blocked by opponent color
-                    if not Piece.IsColour(piece, targetPiece.color, isMoved=piece.is_moved):
+                    if not Piece.IsColour(piece, targetPiece.color):
                         break
 
 
