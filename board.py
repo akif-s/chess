@@ -131,7 +131,9 @@ class Board:
     def destroyPiece(self, piece):
         self.pieces.remove(piece)
 
-    def MakeMove(self, move):
+    def MakeMove(self, x):
+        move = self.GetMove(x)
+
         pieceToMove = self.square[move.startSquare] if move.startSquare in self.square.keys() else None
         targetPiece = self.square[move.targetSquare] if move.targetSquare in self.square.keys() else None
 
@@ -304,10 +306,10 @@ class Board:
             
             self.moves.append(Move(startSquare, targetSquare))
 
-        # Check for left and right rooks
-        # check 3 to right, 4 to left
+        # Check for left and right castle
         if not piece.is_moved:
             # check right [3]
+            # Kingside castle
             directionIndex = 3
             for n in range(3):
                 targetSquare = startSquare + self.directionoffsets[directionIndex]*(n+1)
@@ -320,3 +322,24 @@ class Board:
                     if Piece.IsType(targetPiece, "r") and not targetPiece.is_moved:
                         rookTarget = startSquare + self.directionoffsets[directionIndex]
                         self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetRook=targetPiece, rookTargetSquare=rookTarget))
+
+            # check left [2]
+            # Queenside castle
+            directionIndex = 2
+            for n in range(4):
+                targetSquare = startSquare + self.directionoffsets[directionIndex]*(n+1)
+
+                targetPiece = self.square[targetSquare] if targetSquare in self.square.keys() else None
+                if (targetPiece != None) and ((n+1) != 4):
+                    break
+                
+                if targetPiece != None:
+                    if Piece.IsType(targetPiece, "r") and not targetPiece.is_moved:
+                        rookTarget = startSquare + self.directionoffsets[directionIndex]
+                        self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetRook=targetPiece, rookTargetSquare=rookTarget))
+
+    # Find move from moves list to get all information
+    def GetMove(self, x) -> Move:
+        for move in self.moves:
+            if x == move:
+                return move

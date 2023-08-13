@@ -1,28 +1,5 @@
 from board import Move
 
-""" if self.move.isRook:
-        self.piece.square_index = self.move.targetSquare
-        self.move.targetRook.square_index = self.move.rookTargetSquare
-
-        self.piece.is_moved = True
-        self.move.targetRook.is_moved = True
-
-        self.piece.is_grabbed = False
-        self.piece = None
-
-    if self.piece.is_grabbed:
-
-        targetPiece = board.square[self.move.targetSquare] if self.move.targetSquare in board.square.keys(
-        ) else None
-
-        if targetPiece != None:
-            self.piece.Eat(targetPiece)
-
-        self.piece.square_index = self.move.targetSquare
-        self.piece.is_moved = True
-        self.piece.is_grabbed = False
-        self.piece = None """
-
 
 class Pointer:
     def __init__(self, rotation, surface) -> None:
