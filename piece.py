@@ -70,7 +70,7 @@ class Piece:
             ),
         )
 
-    def Move(self, targetSquare, moveCount):
+    def Move(self, targetSquare, moveCount, isMoved=True):
         
         self.lastMoved = moveCount
         
@@ -82,7 +82,7 @@ class Piece:
         self.square_index = targetSquare
 
         self.is_grabbed = False
-        self.is_moved = True
+        self.is_moved = isMoved
 
     def Eat(self, targetPiece):
         targetPiece.Destroy()

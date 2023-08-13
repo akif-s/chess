@@ -14,7 +14,7 @@ board = Board((233, 217, 185), (170, 137, 105), (219, 116, 116),
               (179, 86, 86), screen, rotation=0)
 
 mouse=Pointer(board.rotation, screen)
-
+2
 startingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
 board.init_pieces(startingFen)
@@ -38,6 +38,10 @@ while True:
             if event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+            
+            if event.key == K_LEFT:
+                if len(board.madeMoves) > 0:
+                    board.UnMakeMove(len(board.madeMoves) - 1)
 
         if event.type == MOUSEMOTION:
             mouse.update_pos(event.pos)

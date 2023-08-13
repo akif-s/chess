@@ -18,6 +18,7 @@ class Board:
         self.pieces = []
         self.moves = []
 
+        self.madeMoves = []
         self.moveCount = 0
 
         self.directionoffsets = [8,-8,-1,1,7,-7,9,-9] # up, down, left, right, upleft, downright, upright, downleft
@@ -30,6 +31,7 @@ class Board:
             self.color_to_move = "black"
         else:
             self.color_to_move = "white"
+
 
     # computes the number of squares to the edges at 8 direction
     def pre_computed_move_data(self):
@@ -78,12 +80,15 @@ class Board:
                 self.tiles[square] = [pygame.Rect(
                     x * self.tile_size[0], y * self.tile_size[1], self.tile_size[0], self.tile_size[1]), color, color]
 
+
     def draw_tiles(self):
         for tile in self.tiles.items():
             pygame.draw.rect(self.surface, tile[1][1], tile[1][0])
 
+
     def paint_square(self, squareNumber, color):
         self.tiles[squareNumber][1] = color
+
 
     def paint_moves(self, piece):
         for move in self.moves:
@@ -91,15 +96,18 @@ class Board:
                 color = self.altColor1 if self.tiles[move.targetSquare][2] == self.color1 else self.altColor2
                 self.paint_square(move.targetSquare, color)
 
+
     def reset_color(self):
         for tile in self.tiles.items():
             if tile[1][1] != tile[1][2]:
                 tile[1][1] = tile[1][2]
 
+
     def set_square(self):
         self.square = {}
         for piece in self.pieces:
             self.square[piece.square_index] = piece
+
 
     # Dechypers the FEN code and adds each piece to the list after creating it.
     def init_pieces(self, fenString):
@@ -130,29 +138,53 @@ class Board:
                 file += 1
             rank -= 1
 
+
     def draw_pieces(self, pointer):
         for p in self.pieces:
             p.draw(self, pointer)
 
+
     def destroyPiece(self, piece):
         self.pieces.remove(piece)
+
 
     def MakeMove(self, x):
         self.moveCount += 1
         move = self.GetMove(x)
 
+        self.madeMoves.append(move)
+
         pieceToMove = self.square[move.startSquare] if move.startSquare in self.square.keys() else None
-        targetPiece = self.square[move.targetSquare] if move.targetSquare in self.square.keys() else None
+
+        targetPiece = move.targetPiece
 
         pieceToMove.Move(move.targetSquare, self.moveCount)
-        if targetPiece != None:
+        if targetPiece != None and not move.isRook:
             pieceToMove.Eat(targetPiece)
         
         if move.isRook:
             move.targetPiece.Move(move.targetPieceSquare, self.moveCount)
         
-        if move.isEnPassant:
-            pieceToMove.Eat(move.targetPiece)
+
+    def UnMakeMove(self, moveIndex):
+        self.set_square()
+        self.change_color()
+
+        move = self.madeMoves[moveIndex]
+        
+        self.madeMoves.pop(moveIndex)
+
+        self.moveCount -= 1
+        
+        pieceToMove = self.square[move.targetSquare] if move.targetSquare in self.square.keys() else None
+
+        pieceToMove.Move(move.startSquare, self.moveCount, move.isMoved)
+        
+        targetPiece = move.targetPiece
+        
+        if targetPiece != None:
+            self.pieces.append(targetPiece)
+            #Piece.Move(targetPiece, move.targetSquare, self.moveCount)
         
 
     def generate_moves(self):
@@ -201,11 +233,11 @@ class Board:
                     if Piece.IsColour(piece, targetPiece.color):
                         break
 
-                self.moves.append(Move(startSquare, targetSquare))
+                self.moves.append(Move(startSquare, targetSquare, targetPiece=targetPiece, isMoved=piece.is_moved))
 
                 if targetPiece != None:
                     # Blocked by opponent color
-                    if not Piece.IsColour(piece, targetPiece.color):
+                    if not Piece.IsColour(piece, targetPiece.color, isMoved=piece.is_moved):
                         break
 
 
@@ -224,7 +256,7 @@ class Board:
             
             targetPiece = self.square[targetSquare] if targetSquare in self.square.keys() else None
             if targetPiece == None:
-                self.moves.append(Move(startSquare,targetSquare))
+                self.moves.append(Move(startSquare,targetSquare, targetPiece=targetPiece))
             else:
                 break
         
@@ -241,7 +273,7 @@ class Board:
             targetPiece = self.square[targetSquare] if targetSquare in self.square.keys() else None
             if targetPiece != None:
                 if not Piece.IsColour(piece, targetPiece.color):
-                    self.moves.append(Move(startSquare,targetSquare))
+                    self.moves.append(Move(startSquare,targetSquare, targetPiece=targetPiece, isMoved=piece.is_moved))
         
         # En Passant(adjacent left or right)
         for direction in [2,3]:
@@ -256,7 +288,7 @@ class Board:
                 if Piece.IsEnPassant(targetPiece, self.moveCount):
                     
                     targetSquare += self.directionoffsets[0] if Piece.IsColour(piece, "white") else self.directionoffsets[1]
-                    self.moves.append(Move(startSquare, targetSquare, isEnPassant=True, targetPiece=targetPiece))
+                    self.moves.append(Move(startSquare, targetSquare, isEnPassant=True, targetPiece=targetPiece, isMoved=piece.is_moved))
 
 
     def generate_knight_moves(self, startSquare, piece):
@@ -287,7 +319,7 @@ class Board:
                     if Piece.IsColour(piece, targetPiece.color):
                         continue
 
-                self.moves.append(Move(startSquare, targetSquare))
+                self.moves.append(Move(startSquare, targetSquare, targetPiece=targetPiece, isMoved=piece.is_moved))
         
         # (2)
         # Check 1 up and 1 down moves
@@ -313,7 +345,7 @@ class Board:
                     if Piece.IsColour(piece, targetPiece.color):
                         continue
 
-                self.moves.append(Move(startSquare, targetSquare))
+                self.moves.append(Move(startSquare, targetSquare, targetPiece=targetPiece, isMoved=piece.is_moved))
 
 
     def generate_king_moves(self, startSquare, piece):
@@ -329,7 +361,7 @@ class Board:
                 if Piece.IsColour(piece, targetPiece.color):
                     continue
             
-            self.moves.append(Move(startSquare, targetSquare))
+            self.moves.append(Move(startSquare, targetSquare, targetPiece=targetPiece, isMoved=piece.is_moved))
 
         # Check for left and right castle
         if not piece.is_moved:
@@ -346,7 +378,7 @@ class Board:
                 if targetPiece != None:
                     if Piece.IsType(targetPiece, "r") and not targetPiece.is_moved:
                         rookTarget = startSquare + self.directionoffsets[directionIndex]
-                        self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetPiece=targetPiece, targetPieceSquare=rookTarget))
+                        self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetPiece=targetPiece, targetPieceSquare=rookTarget, isMoved=piece.is_moved))
 
             # check left [2]
             # Queenside castle
@@ -361,7 +393,8 @@ class Board:
                 if targetPiece != None:
                     if Piece.IsType(targetPiece, "r") and not targetPiece.is_moved:
                         rookTarget = startSquare + self.directionoffsets[directionIndex]
-                        self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetPiece=targetPiece, targetPieceSquare=rookTarget))
+                        self.moves.append(Move(startSquare, startSquare + self.directionoffsets[directionIndex]*2, isRook=True, targetPiece=targetPiece, targetPieceSquare=rookTarget, isMoved=piece.is_moved))
+
 
     # Find move from moves list to get all information
     def GetMove(self, x) -> Move:
