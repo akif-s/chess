@@ -2,13 +2,13 @@ import pygame
 
 
 class Move:
-    def __init__(self, startSquare, targetSquare, isRook=False, isEnPassant=False, targetRook=None, rookTargetSquare=None) -> None:
+    def __init__(self, startSquare, targetSquare, isRook=False, isEnPassant=False, targetPiece=None, targetPieceSquare=None) -> None:
         self.startSquare = startSquare
         self.targetSquare = targetSquare
 
         self.isRook = isRook
-        self.targetRook = targetRook
-        self.rookTargetSquare = rookTargetSquare
+        self.targetPiece = targetPiece
+        self.targetPieceSquare = targetPieceSquare
 
         self.isEnPassant = isEnPassant
 

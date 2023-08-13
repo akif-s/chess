@@ -10,6 +10,7 @@ class Piece:
         self.scale_factor = scale_factor
         self.board = board
 
+        self.lastMoved = -1 
         self.isEnPassant = False
 
         self.square_index = (self.rank - 1) * 8 + (self.file - 1)
@@ -34,7 +35,7 @@ class Piece:
     # returns the general info about the piece object.
 
     def __str__(self) -> str:
-        return f"type: {self.name}\ncolor: {self.color}\nfile: {self.file}\nrank: {self.rank}\nsquare index: {self.square_index}\nis grabbed:{self.is_grabbed}\n---------"
+        return f"type: {self.name}\ncolor: {self.color}\nfile: {self.file}\nrank: {self.rank}\nsquare index: {self.square_index}\nis grabbed:{self.is_grabbed}\nis en passant: {self.isEnPassant}\n---------"
 
     def draw(self, board, pointer):
         tile_size = board.surface.get_width() / 8
@@ -69,7 +70,10 @@ class Piece:
             ),
         )
 
-    def Move(self, targetSquare):
+    def Move(self, targetSquare, moveCount):
+        
+        self.lastMoved = moveCount
+        
         file, rank = Piece.SquareIndexToFileAndRank(targetSquare)
 
         self.file = file
@@ -112,7 +116,15 @@ class Piece:
 
 
     # Need to check BEFORE the move has been made.
-    def IsEnPassant(self):
-        if self.type == "p":
-            if abs(self.prank - self.rank) == 16:
-                self.isEnPassant = True
+    def IsEnPassant(piece, moveCount):
+        if piece.type != "p":
+            return False
+
+        # If the pawn moved double
+        if abs(piece.prank - piece.rank) == 2 and moveCount - piece.lastMoved == 0:
+            piece.isEnPassant = True
+            return True
+
+        piece.isEnPassant = False
+        return False
+

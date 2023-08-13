@@ -15,7 +15,9 @@ board = Board((233, 217, 185), (170, 137, 105), (219, 116, 116),
 
 mouse=Pointer(board.rotation, screen)
 
-board.init_pieces("r111k11r/pppppppp/8/8/8/8/PPPPPPPP/R111K11R")
+startingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
+
+board.init_pieces(startingFen)
 board.generate_tiles()
 
 while True:
