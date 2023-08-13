@@ -102,9 +102,9 @@ class Board:
             self.square[piece.square_index] = piece
 
     # Dechypers the FEN code and adds each piece to the list after creating it.
-    def init_pieces(self, starting_fen):
+    def init_pieces(self, fenString):
         rank = 8
-        for r in starting_fen.split("/"):
+        for r in fenString.split("/"):
             file = 1
             for p in r:
                 # skips if `p` is a number
@@ -123,6 +123,10 @@ class Board:
                     self.square[(rank-1)*8 + (file - 1)] = piece
                     # adding the piece object to the pieces list
                     self.pieces.append(piece)
+                else:
+                    file += int(p)
+                    continue
+
                 file += 1
             rank -= 1
 
