@@ -114,6 +114,8 @@ class Piece:
         rank = (n - file + 1)//8 + 1
         return file, rank
 
+    def ToSquareIndex(file, rank) -> int:
+        return (rank-1)*8 + file - 1
 
     # Need to check BEFORE the move has been made.
     def IsEnPassant(piece, moveCount):

@@ -182,10 +182,12 @@ class Board:
         
         targetPiece = move.targetPiece
         
+        if move.isRook:
+            Piece.Move(targetPiece, Piece.ToSquareIndex(targetPiece.pfile, targetPiece.prank), self.moveCount, False)
+
         if targetPiece != None:
             self.pieces.append(targetPiece)
-            #Piece.Move(targetPiece, move.targetSquare, self.moveCount)
-        
+
 
     def generate_moves(self):
         self.set_square()
