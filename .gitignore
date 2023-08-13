@@ -1,0 +1,8 @@
+# Ignore Visual Studio Code settings
+.vscode/**
+
+# Ignore virtual environment
+.venv/**
+
+
+.__pycache__/**
