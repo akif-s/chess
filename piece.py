@@ -1,4 +1,5 @@
 import pygame
+from sound import Sound
 
 
 class Piece:
@@ -71,7 +72,7 @@ class Piece:
         )
 
     def Move(self, targetSquare, moveCount, isMoved=True):
-        
+        Sound.PlayMove()
         self.lastMoved = moveCount
         
         file, rank = Piece.SquareIndexToFileAndRank(targetSquare)
@@ -85,6 +86,7 @@ class Piece:
         self.is_moved = isMoved
 
     def Eat(self, targetPiece):
+        Sound.PlayCapture()
         targetPiece.Destroy()
 
     def Destroy(self):

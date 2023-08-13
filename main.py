@@ -6,15 +6,17 @@ from mouse import Pointer
 
 pygame.init()
 
+captureSound = pygame.mixer.Sound("audio/Capture.mp3")
+moveSound = pygame.mixer.Sound("audio/Move.mp3")
+
 WINDOW_SIZE = (1200, 1200)
 
 screen = pygame.display.set_mode(WINDOW_SIZE)
 
-board = Board((233, 217, 185), (170, 137, 105), (219, 116, 116),
-              (179, 86, 86), screen, rotation=0)
+board = Board((233, 217, 185), (170, 137, 105), (219, 116, 116),(179, 86, 86), screen, rotation=0)
 
 mouse=Pointer(board.rotation, screen)
-2
+
 startingFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR" # "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"
 
 board.init_pieces(startingFen)
